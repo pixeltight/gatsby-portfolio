@@ -1,51 +1,53 @@
-/**
- * Layout component that queries for data
- * with Gatsby's useStaticQuery component
- *
- * See: https://www.gatsbyjs.org/docs/use-static-query/
- */
+import React from 'react'
+import { graphql, StaticQuery } from 'gatsby'
+import { Helmet } from 'react-helmet'
 
-import React from "react"
-import PropTypes from "prop-types"
-import { useStaticQuery, graphql } from "gatsby"
+import MainMenu from './MainMenu'
 
-import Header from "./header"
-import "./layout.css"
+import styled, { createGlobalStyle } from 'styled-components'
 
-const Layout = ({ children }) => {
-  const data = useStaticQuery(graphql`
-    query SiteTitleQuery {
-      site {
-        siteMetadata {
-          title
+const GlobalStyles = createGlobalStyle`
+  body {
+    font-family: 'Open Sans', sans-serif;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+`
+
+const LayoutWrapper = styled.div`
+  max-width: 960px;
+  margin: 0 auto;
+`
+
+const Layout = ({ children }) => (
+  <>
+    <StaticQuery
+      query={graphql`
+        {
+          allWordpressWpFavicon {
+            edges {
+              node {
+                url {
+                  source_url
+                }
+              }
+            }
+          }
         }
-      }
-    }
-  `)
-
-  return (
-    <>
-      <Header siteTitle={data.site.siteMetadata.title} />
-      <div
-        style={{
-          margin: `0 auto`,
-          maxWidth: 960,
-          padding: `0 1.0875rem 1.45rem`,
-        }}
-      >
-        <main>{children}</main>
-        <footer>
-          © {new Date().getFullYear()}, Built with
-          {` `}
-          <a href="https://www.gatsbyjs.org">Gatsby</a>
-        </footer>
-      </div>
-    </>
-  )
-}
-
-Layout.propTypes = {
-  children: PropTypes.node.isRequired,
-}
-
+      `}
+      render={props => (
+        <Helmet>
+          <link
+            rel='icon'
+            href={props.allWordpressWpFavicon.edges[0].node.url.source_url}
+          />
+          <link href='https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap' />
+        </Helmet>
+      )}
+    />
+    <GlobalStyles />
+    <MainMenu />
+    <LayoutWrapper>{children}</LayoutWrapper>
+  </>
+)
 export default Layout
